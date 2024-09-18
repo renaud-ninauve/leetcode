@@ -24,4 +24,16 @@ class SolutionTest {
         int actual = new Solution().trap(new int[] {0, 1, 0, 1, 0, 0, 1, 0});
         assertThat(actual).isEqualTo(3);
     }
+
+    @Test
+    void should_trap_when_several_heights1() {
+        int actual = new Solution().trap(new int[] {0,1,0,2,1,0,1,3,2,1,2,1});
+        assertThat(actual).isEqualTo(6);
+    }
+
+    @Test
+    void should_trap_when_several_heights2() {
+        int actual = new Solution().trap(new int[] {4,2,0,3,2,5});
+        assertThat(actual).isEqualTo(9);
+    }
 }

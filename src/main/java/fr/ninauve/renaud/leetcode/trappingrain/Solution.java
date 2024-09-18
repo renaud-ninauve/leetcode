@@ -1,29 +1,55 @@
 package fr.ninauve.renaud.leetcode.trappingrain;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 // https://leetcode.com/problems/trapping-rain-water/
 public class Solution {
 
     public int trap(int[] height) {
-        boolean left = false;
-        int emptyAfterLeft = 0;
-        int trapped = 0;
+        int maxHeight = Arrays.stream(height).max().orElse(0);
+        return (int) IntStream.rangeClosed(1, maxHeight)
+                .mapToLong(currentHeight -> trapAtHeight(height, currentHeight))
+                .sum();
+    }
+
+    private int trapAtHeight(int[] height, int currentHeight) {
+        TrapAtHeightContext ctx = new TrapAtHeightContext(currentHeight);
+
         for(int columnHeight: height) {
-            if (!left) {
-                if (columnHeight > 0) {
-                    left = true;
-                    emptyAfterLeft = 0;
-                }
-                continue;
-            }
-            if (columnHeight > 0) {
-                trapped += emptyAfterLeft;
-                emptyAfterLeft = 0;
+            if (!ctx.left) {
+                handleNothingAtLeft(ctx, columnHeight);
             } else {
-                emptyAfterLeft++;
+                handleSomethingAtLeft(ctx, columnHeight);
             }
         }
-        return trapped;
+        return ctx.trapped;
+    }
+
+    private void handleNothingAtLeft(TrapAtHeightContext ctx, int columnHeight) {
+        if (columnHeight >= ctx.currentHeight) {
+            ctx.left = true;
+            ctx.emptyAfterLeft = 0;
+        }
+    }
+
+    private void handleSomethingAtLeft(TrapAtHeightContext ctx, int columnHeight) {
+        if (columnHeight >= ctx.currentHeight) {
+            ctx.trapped += ctx.emptyAfterLeft;
+            ctx.emptyAfterLeft = 0;
+        } else {
+            ctx.emptyAfterLeft++;
+        }
+    }
+
+    private static class TrapAtHeightContext {
+        private final int currentHeight;
+        private boolean left = false;
+        private int emptyAfterLeft = 0;
+        private int trapped = 0;
+
+        private TrapAtHeightContext(int currentHeight) {
+            this.currentHeight = currentHeight;
+        }
     }
 }
