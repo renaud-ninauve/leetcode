@@ -1,67 +1,52 @@
 package fr.ninauve.renaud.leetcode.trappingrain;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 // https://leetcode.com/problems/trapping-rain-water/
 public class Solution {
 
     public int trap(int[] height) {
-        List<Integer> sorted = Arrays.stream(height)
-                .sorted()
-                .distinct()
-                .boxed()
-                .toList();
-
-        int waterTotal = 0;
-        for (int i = 1; i < sorted.size(); i++) {
-            int currentHeight = sorted.get(i);
-            int previousHeight = sorted.get(i - 1);
-            int trappedOne = trapAtHeight(height, currentHeight);
-            int deltaHeight = currentHeight - previousHeight;
-            waterTotal += trappedOne * deltaHeight;
-        }
-        return waterTotal;
-    }
-
-    private int trapAtHeight(int[] height, int currentHeight) {
-        TrapAtHeightContext ctx = new TrapAtHeightContext(currentHeight);
-
-        for (int columnHeight : height) {
-            if (!ctx.left) {
-                handleNothingAtLeft(ctx, columnHeight);
-            } else {
-                handleSomethingAtLeft(ctx, columnHeight);
+        List<Integer> maxLeft = maxLeft(height);
+        List<Integer> maxRight = maxRight(height);
+        int water = 0;
+        for(int i=0; i<height.length; i++) {
+            Integer left = maxLeft.get(i);
+            Integer right = maxRight.get(i);
+            int maxWater = Math.min(left, right);
+            if (maxWater > height[i]) {
+                water += maxWater - height[i];
             }
         }
-        return ctx.trapped;
+        return water;
     }
 
-    private void handleNothingAtLeft(TrapAtHeightContext ctx, int columnHeight) {
-        if (columnHeight >= ctx.currentHeight) {
-            ctx.left = true;
-            ctx.emptyAfterLeft = 0;
+    private List<Integer> maxLeft(int[] height) {
+        List<Integer> left = new ArrayList<>(height.length);
+        int previous = 0;
+        for(int i=0; i<height.length; i++) {
+            int currentHeight = height[i];
+            int max = Math.max(previous, currentHeight);
+            previous = max;
+            left.add(max);
         }
+        return left;
     }
 
-    private void handleSomethingAtLeft(TrapAtHeightContext ctx, int columnHeight) {
-        if (columnHeight >= ctx.currentHeight) {
-            ctx.trapped += ctx.emptyAfterLeft;
-            ctx.emptyAfterLeft = 0;
-        } else {
-            ctx.emptyAfterLeft++;
+    private List<Integer> maxRight(int[] height) {
+        List<Integer> right = IntStream.rangeClosed(1, height.length)
+                .map(i -> 0)
+                .boxed()
+                .collect(Collectors.toList());
+        int previous = 0;
+        for(int i=height.length-1; i>=0; i--) {
+            int currentHeight = height[i];
+            int max = Math.max(previous, currentHeight);
+            previous = max;
+            right.set(i, max);
         }
-    }
-
-    private static class TrapAtHeightContext {
-        private final int currentHeight;
-        private boolean left = false;
-        private int emptyAfterLeft = 0;
-        private int trapped = 0;
-
-        private TrapAtHeightContext(int currentHeight) {
-            this.currentHeight = currentHeight;
-        }
+        return right;
     }
 }
