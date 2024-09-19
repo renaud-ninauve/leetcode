@@ -11,8 +11,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class SolutionTest {
 
     @ParameterizedTest
-    @CsvSource(delimiterString = " => ", value ={
-            "1,2,0 => 2"})
+    @CsvSource(delimiterString = " => ", value = {
+            "1,2,0 => 3",
+            "3,4,-1,1 => 2",
+            "7,8,9,11,12 => 1",
+            "-4,-3,-4,-2 => 1",
+            "100000,3,4000,2,15,1,99999 => 4"
+    })
     void test(String values, int expected) {
         int[] nums = Arrays.stream(values.split(",")).mapToInt(Integer::parseInt).toArray();
         int actual = new Solution().firstMissingPositive(nums);
