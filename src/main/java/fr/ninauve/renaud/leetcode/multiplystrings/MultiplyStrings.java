@@ -6,13 +6,21 @@ public class MultiplyStrings {
     public String multiply(String a, String b) {
         ListNode aHead = toListNode(a);
         ListNode bHead = toListNode(b);
-        ListNode totalHead = null;
-        ListNode currentA = aHead;
-        ListNode currentB = bHead;
-        ListNode currentTotal = null;
 
-        while (currentB != null) {
-            int currentVal = currentA.val * currentB.val;
+        ListNode total = multiply(aHead.val, bHead);
+
+        return listNodeToString(total);
+    }
+
+    private ListNode multiply(int a, ListNode b) {
+        ListNode totalHead = null;
+        ListNode current = b;
+        ListNode currentTotal = null;
+        int carry = 0;
+        while (current != null) {
+            int multidigitResult = a * current.val + carry;
+            int currentVal = multidigitResult % 10;
+            carry = multidigitResult / 10;
             if (totalHead == null) {
                 totalHead = new ListNode(currentVal);
                 currentTotal = totalHead;
@@ -20,10 +28,12 @@ public class MultiplyStrings {
                 currentTotal.next = new ListNode(currentVal);
                 currentTotal = currentTotal.next;
             }
-            currentB = currentB.next;
+            current = current.next;
         }
-
-        return listNodeToString(totalHead);
+        if (carry > 0) {
+            currentTotal.next = new ListNode(carry);
+        }
+        return totalHead;
     }
 
     public ListNode toListNode(String number) {

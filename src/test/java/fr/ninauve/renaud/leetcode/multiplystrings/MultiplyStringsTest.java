@@ -15,7 +15,8 @@ class MultiplyStringsTest {
     @ParameterizedTest
     @CsvSource(delimiterString = "  ", value = {
             "3  4   12",
-            "2  12   24"
+            "2  12   24",
+            "5  53   265"
     })
     void multiply(String a, String b, String expected) {
         String actual = new MultiplyStrings().multiply(a, b);
