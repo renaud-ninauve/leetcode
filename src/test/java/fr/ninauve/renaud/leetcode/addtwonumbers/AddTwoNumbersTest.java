@@ -22,6 +22,11 @@ class AddTwoNumbersTest {
                         listNode(1, 1, 1),
                         listNode(2, 3, 4),
                         listNode(3, 4, 5)
+                ),
+                Arguments.of(
+                        listNode(6),
+                        listNode(7),
+                        listNode(3, 1)
                 ));
     }
 
