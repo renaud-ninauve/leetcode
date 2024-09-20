@@ -2,7 +2,6 @@ package fr.ninauve.renaud.leetcode.multiplystrings;
 
 // https://leetcode.com/problems/multiply-strings
 public class MultiplyStrings {
-
     public String multiply(String a, String b) {
         ListNode aHead = toListNode(a);
         ListNode bHead = toListNode(b);
@@ -22,6 +21,9 @@ public class MultiplyStrings {
     }
 
     private ListNode pow10(ListNode listNode, int pow) {
+        if (zero().equals(listNode)) {
+            return zero();
+        }
         ListNode result = listNode;
         for (int i = 0; i < pow; i++) {
             result = new ListNode(0, result);
@@ -30,6 +32,9 @@ public class MultiplyStrings {
     }
 
     private ListNode multiply(int a, ListNode b) {
+        if (a == 0 || zero().equals(b)) {
+            return zero();
+        }
         ListNode totalHead = null;
         ListNode current = b;
         ListNode currentTotal = null;
@@ -126,5 +131,9 @@ public class MultiplyStrings {
         private ListNode next(ListNode listNode) {
             return listNode == null ? null : listNode.next;
         }
+    }
+
+    private static ListNode zero() {
+        return new ListNode(0, null);
     }
 }

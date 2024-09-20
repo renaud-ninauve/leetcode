@@ -19,9 +19,11 @@ class MultiplyStringsTest {
             "5, 53, 265",
             "12, 23, 276",
             "67, 89, 5963",
+            "0, 9133, 0",
 
             // examples from leetcode
-            "123, 456, 56088"
+            "123, 456, 56088",
+            "9133, 0, 0"
     })
     void multiply(String a, String b, String expected) {
         String actual = new MultiplyStrings().multiply(a, b);
