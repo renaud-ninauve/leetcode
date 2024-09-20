@@ -3,7 +3,7 @@ package fr.ninauve.renaud.leetcode.firstmissingpositive;
 import java.util.Arrays;
 
 // https://leetcode.com/problems/first-missing-positive/
-public class Solution {
+public class FirstMissingPositive {
 
     public int firstMissingPositive(int[] nums) {
         Arrays.sort(nums);

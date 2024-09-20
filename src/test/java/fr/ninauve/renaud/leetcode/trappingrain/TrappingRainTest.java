@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SolutionTest {
+class TrappingRainTest {
 
     static Stream<Arguments> should_trap_water() {
         return Stream.of(Arguments.of(
@@ -70,7 +70,7 @@ class SolutionTest {
     void should_trap_water(String heightsString, int expected) {
         int[] heights = parseHeights(heightsString);
 
-        int actual = new Solution().trap(heights);
+        int actual = new TrappingRain().trap(heights);
 
         assertThat(actual).isEqualTo(expected);
     }

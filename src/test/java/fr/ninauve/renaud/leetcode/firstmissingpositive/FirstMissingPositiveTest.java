@@ -6,9 +6,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
-class SolutionTest {
+class FirstMissingPositiveTest {
 
     @ParameterizedTest
     @CsvSource(delimiterString = " => ", value = {
@@ -20,7 +19,7 @@ class SolutionTest {
     })
     void test(String values, int expected) {
         int[] nums = Arrays.stream(values.split(",")).mapToInt(Integer::parseInt).toArray();
-        int actual = new Solution().firstMissingPositive(nums);
+        int actual = new FirstMissingPositive().firstMissingPositive(nums);
         assertThat(actual).isEqualTo(expected);
     }
 }

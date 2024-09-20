@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 // https://leetcode.com/problems/trapping-rain-water/
-public class Solution {
+public class TrappingRain {
 
     public int trap(int[] height) {
         List<Integer> maxLeft = maxLeft(height);
