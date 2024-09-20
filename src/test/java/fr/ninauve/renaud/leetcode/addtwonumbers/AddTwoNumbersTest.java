@@ -27,6 +27,33 @@ class AddTwoNumbersTest {
                         listNode(6),
                         listNode(7),
                         listNode(3, 1)
+                ),
+                Arguments.of(
+                        listNode(1),
+                        listNode(2, 3),
+                        listNode(3, 3)
+                ),
+                Arguments.of(
+                        listNode(1, 1),
+                        listNode(2),
+                        listNode(3, 1)
+                ),
+
+                // examples from leetcode
+                Arguments.of(
+                        listNode(2, 4, 3),
+                        listNode(5, 6, 4),
+                        listNode(7, 0, 8)
+                ),
+                Arguments.of(
+                        listNode(0),
+                        listNode(0),
+                        listNode(0)
+                ),
+                Arguments.of(
+                        listNode(9, 9, 9, 9, 9, 9, 9),
+                        listNode(9, 9, 9, 9),
+                        listNode(8, 9, 9, 9, 0, 0, 0, 1)
                 ));
     }
 
