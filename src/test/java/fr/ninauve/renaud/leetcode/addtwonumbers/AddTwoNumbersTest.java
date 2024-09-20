@@ -17,6 +17,11 @@ class AddTwoNumbersTest {
                         listNode(2),
                         listNode(3),
                         listNode(5)
+                ),
+                Arguments.of(
+                        listNode(1, 1, 1),
+                        listNode(2, 3, 4),
+                        listNode(3, 4, 5)
                 ));
     }
 
