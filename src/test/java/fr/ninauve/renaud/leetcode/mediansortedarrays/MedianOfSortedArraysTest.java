@@ -22,6 +22,21 @@ class MedianOfSortedArraysTest {
                         new int[] {},
                         new int[] {1, 2, 3, 4},
                         2.5d
+                ),
+                Arguments.of(
+                        new int[] {1},
+                        new int[] {3, 4, 5},
+                        3.5d
+                ),
+                Arguments.of(
+                        new int[] {1},
+                        new int[] {3, 4, 5, 6},
+                        4d
+                ),
+                Arguments.of(
+                        new int[] {1, 3},
+                        new int[] {4, 5},
+                        3.5d
                 )
         );
     }
