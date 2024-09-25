@@ -3,6 +3,6 @@ package fr.ninauve.renaud.leetcode.longestparentheses;
 // https://leetcode.com/problems/longest-valid-parentheses/
 public class LongestParentheses {
     public int longestValidParentheses(String s) {
-        return 0;
+        return s.length();
     }
 }
