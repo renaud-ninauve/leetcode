@@ -9,6 +9,7 @@ public class LongestParentheses {
 
     public int longestValidParentheses(String s) {
         Range max = Range.empty();
+        Range previous = Range.empty();
         Range current = Range.empty();
         LinkedList<Integer> open = new LinkedList<>();
         for (int i = 0; i < s.length(); i++) {
@@ -17,19 +18,23 @@ public class LongestParentheses {
                 open.add(i);
             } else if (c == CLOSE) {
                 if (open.isEmpty()) {
-                    if (current.length() > max.length()) {
-                        max = current;
-                    }
+                    max = current.length() >= max.length() ? current : max;
+                    previous = Range.empty();
+                    current = Range.empty();
                 } else {
                     int start = open.pop();
                     current = new Range(start, i);
+                    current = current.isJustAfter(previous) ? concat(previous, current) : current;
+                    previous = current;
                 }
             }
         }
-        if (current.length() > max.length()) {
-            max = current;
-        }
+        max = current.length() >= max.length() ? current : max;
         return max.length();
+    }
+
+    private Range concat(Range a, Range b) {
+        return new Range(a.start, b.end);
     }
 
     private static class Range {
@@ -47,6 +52,10 @@ public class LongestParentheses {
 
         private int length() {
             return start < 0 ? 0 : end - start + 1;
+        }
+
+        private boolean isJustAfter(Range initial) {
+            return length() > 0 && initial.length() > 0 && start == initial.end + 1;
         }
     }
 }
