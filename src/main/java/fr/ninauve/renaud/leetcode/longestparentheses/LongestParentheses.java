@@ -15,7 +15,7 @@ public class LongestParentheses {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == OPEN) {
-                open.add(i);
+                open.push(i);
             } else if (c == CLOSE) {
                 if (open.isEmpty()) {
                     max = current.length() >= max.length() ? current : max;
