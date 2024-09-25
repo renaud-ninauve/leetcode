@@ -1,33 +1,52 @@
 package fr.ninauve.renaud.leetcode.longestparentheses;
 
+import java.util.LinkedList;
+
 // https://leetcode.com/problems/longest-valid-parentheses/
 public class LongestParentheses {
     private static final char OPEN = '(';
-    private static final char CLOSE= ')';
+    private static final char CLOSE = ')';
 
     public int longestValidParentheses(String s) {
-        boolean valid = true;
-        int open = 0;
-        int maxValid = 0;
-        int currentValid = 0;
-        for(int i=0; i<s.length(); i++) {
+        Range max = Range.empty();
+        Range current = Range.empty();
+        LinkedList<Integer> open = new LinkedList<>();
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == OPEN) {
-                open++;
-                valid = true;
+                open.add(i);
             } else if (c == CLOSE) {
-                if (open > 0) {
-                    open--;
+                if (open.isEmpty()) {
+                    if (current.length() > max.length()) {
+                        max = current;
+                    }
                 } else {
-                    valid = false;
-                    currentValid = 0;
-                    maxValid = Math.max(currentValid, maxValid);
+                    int start = open.pop();
+                    current = new Range(start, i);
                 }
             }
-            if (valid) {
-                currentValid++;
-            }
         }
-        return valid ? Math.max(maxValid, currentValid) : maxValid;
+        if (current.length() > max.length()) {
+            max = current;
+        }
+        return max.length();
+    }
+
+    private static class Range {
+        private final int start;
+        private final int end;
+
+        private static Range empty() {
+            return new Range(-1, -1);
+        }
+
+        private Range(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        private int length() {
+            return start < 0 ? 0 : end - start + 1;
+        }
     }
 }
