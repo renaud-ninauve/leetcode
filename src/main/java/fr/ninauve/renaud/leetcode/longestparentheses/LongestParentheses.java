@@ -23,9 +23,11 @@ public class LongestParentheses {
                     current = Range.empty();
                 } else {
                     int start = open.pop();
-                    current = new Range(start, i);
-                    current = current.isJustAfter(previous) ? concat(previous, current) : current;
-                    previous = current;
+                    Range closedRange = new Range(start, i);
+                    current = closedRange.isJustAfter(previous) ? concat(previous, closedRange) : closedRange;
+                    if (open.isEmpty()) {
+                        previous = current;
+                    }
                 }
             }
         }
