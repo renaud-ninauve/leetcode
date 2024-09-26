@@ -43,6 +43,10 @@ class LongestParenthesesTest {
                 Arguments.of(
                         "()(())",
                         6
+                ),
+                Arguments.of(
+                        "(()()",
+                        4
                 ));
     }
 
