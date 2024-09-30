@@ -40,6 +40,14 @@ class WildCardMatchingTest {
                 arguments()
                         .string("")
                         .pattern("*")
+                        .expected(true),
+                arguments()
+                        .string("toto")
+                        .pattern("*")
+                        .expected(true),
+                arguments()
+                        .string("toto")
+                        .pattern("toto*")
                         .expected(true)
         );
     }
@@ -54,7 +62,7 @@ class WildCardMatchingTest {
     private static ArgumentsBuilder arguments() {
         return new ArgumentsBuilder();
     }
-    
+
     private static class ArgumentsBuilder {
         private String string;
         private String pattern;
@@ -74,7 +82,7 @@ class WildCardMatchingTest {
             this.expected = expected;
             return build();
         }
-        
+
         private Arguments build() {
             return Arguments.of(string, pattern, expected);
         }
