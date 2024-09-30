@@ -36,6 +36,10 @@ class WildCardMatchingTest {
                 arguments()
                         .string("toto")
                         .pattern("*")
+                        .expected(true),
+                arguments()
+                        .string("")
+                        .pattern("*")
                         .expected(true)
         );
     }
