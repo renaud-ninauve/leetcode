@@ -1,5 +1,8 @@
 package fr.ninauve.renaud.leetcode.wildcardmatching;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class WildCardMatching {
 
     private static final char ANY_CHAR = '?';
@@ -12,11 +15,23 @@ public class WildCardMatching {
         if (pattern.indexOf(ANY_SUBSEQUENCE) < 0 && string.length() != pattern.length()) {
             return false;
         }
-        SubsequenceMatcher matcher = new SubsequenceMatcher(pattern);
+        String[] subPatterns = pattern.split("\\*");
+        List<SubsequenceMatcher> matchers = Arrays.stream(subPatterns)
+                .map(SubsequenceMatcher::new)
+                .toList();
+        int matcherIndex = 0;
+        SubsequenceMatcher matcher = matchers.get(matcherIndex);
         for (int i = 0; i < string.length(); i++) {
+            if (matcher.matchesFully()) {
+                if (matcherIndex >= matchers.size() - 1) {
+                    return false;
+                }
+                matcherIndex++;
+                matcher = matchers.get(matcherIndex);
+            }
             char actualChar = string.charAt(i);
             matcher.actualChar(actualChar);
-            if (!matcher.matches()) {
+            if (!matcher.matchesPartially()) {
                 return false;
             }
         }
@@ -44,8 +59,12 @@ public class WildCardMatching {
             }
         }
 
-        private boolean matches() {
+        private boolean matchesPartially() {
             return matchLength >= 0;
+        }
+
+        private boolean matchesFully() {
+            return matchLength == pattern.length();
         }
 
         private int getMatchLength() {
