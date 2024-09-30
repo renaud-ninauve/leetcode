@@ -8,6 +8,9 @@ public class WildCardMatching {
         for(int i=0; i<string.length(); i++) {
             char actualChar = string.charAt(i);
             char expectedChar = pattern.charAt(i);
+            if (expectedChar == '?') {
+                continue;
+            }
             if (actualChar != expectedChar) {
                 return false;
             }
