@@ -35,7 +35,8 @@ public class WildCardMatching {
                 return false;
             }
         }
-        return true;
+        return matchers.stream()
+                .allMatch(SubsequenceMatcher::matchesFully);
     }
 
     private static class SubsequenceMatcher {
