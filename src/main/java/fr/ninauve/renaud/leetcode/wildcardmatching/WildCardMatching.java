@@ -2,6 +2,16 @@ package fr.ninauve.renaud.leetcode.wildcardmatching;
 
 public class WildCardMatching {
     public boolean isMatch(String string, String pattern) {
-        return pattern.isEmpty() && string.isEmpty();
+        if (string.length() != pattern.length()) {
+            return false;
+        }
+        for(int i=0; i<string.length(); i++) {
+            char actualChar = string.charAt(i);
+            char expectedChar = pattern.charAt(i);
+            if (actualChar != expectedChar) {
+                return false;
+            }
+        }
+        return true;
     }
 }
