@@ -12,9 +12,6 @@ public class WildCardMatching {
         if (!pattern.isEmpty() && pattern.charAt(0) == ANY_SUBSEQUENCE) {
             return true;
         }
-        if (pattern.indexOf(ANY_SUBSEQUENCE) < 0 && string.length() != pattern.length()) {
-            return false;
-        }
         String[] subPatterns = pattern.split("\\*");
         List<SubsequenceMatcher> matchers = Arrays.stream(subPatterns)
                 .map(SubsequenceMatcher::new)
@@ -32,7 +29,7 @@ public class WildCardMatching {
             char actualChar = string.charAt(i);
             matcher.actualChar(actualChar);
             if (!matcher.matchesPartially()) {
-                return false;
+                matcher.reset();
             }
         }
         return matchers.stream()
@@ -70,6 +67,10 @@ public class WildCardMatching {
 
         private int getMatchLength() {
             return matchLength;
+        }
+
+        private void reset() {
+            matchLength = 0;
         }
     }
 }

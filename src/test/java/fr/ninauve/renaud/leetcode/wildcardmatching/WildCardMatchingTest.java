@@ -56,7 +56,15 @@ class WildCardMatchingTest {
                 arguments()
                         .string("to")
                         .pattern("to*to")
-                        .expected(false)
+                        .expected(false),
+                arguments()
+                        .string("tototoaa")
+                        .pattern("to*to")
+                        .expected(false),
+                arguments()
+                        .string("toxxto")
+                        .pattern("to*to")
+                        .expected(true)
         );
     }
 
