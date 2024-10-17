@@ -1,6 +1,5 @@
 package fr.ninauve.renaud.leetcode.wildcardmatching;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -8,7 +7,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class WildCardMatchingTest {
 
@@ -69,6 +67,16 @@ class WildCardMatchingTest {
                 arguments()
                         .string("toaabbaabbccdd")
                         .pattern("to*aabbccdd")
+                        .expected(true),
+
+                // leetcode
+                arguments()
+                        .string("aaaa")
+                        .pattern("***a")
+                        .expected(true),
+                arguments()
+                        .string("adceb")
+                        .pattern("*a*b")
                         .expected(true)
         );
     }
@@ -78,6 +86,38 @@ class WildCardMatchingTest {
     void isMatch(final String str, final String pattern, final boolean expected) {
         boolean actual = new WildCardMatching().isMatch(str, pattern);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    static Stream<Arguments> matchSubPattern() {
+        return Stream.of(
+                Arguments.of(
+                        "abcd", "abcd", WildCardMatching.MatchResult.found(0, 3)
+                ),Arguments.of(
+                        "abcd", "a??d", WildCardMatching.MatchResult.found(0, 3)
+                ), Arguments.of(
+                        "xxabcd", "abcd", WildCardMatching.MatchResult.found(2, 5)
+                ), Arguments.of(
+                        "xxabcdxx", "abcd", WildCardMatching.MatchResult.found(2, 5)
+                ), Arguments.of(
+                        "xxababcd", "abcd", WildCardMatching.MatchResult.found(4, 7)
+                ), Arguments.of(
+                        "xxabxx", "abcd", WildCardMatching.MatchResult.notFound()
+                ), Arguments.of(
+                        "xxxx", "abcdefghijklmnopqrstuvwxyz", WildCardMatching.MatchResult.notFound()
+                ), Arguments.of(
+                        "", "abcd", WildCardMatching.MatchResult.notFound()
+                ), Arguments.of(
+                        "aaaa", "a", WildCardMatching.MatchResult.found(0, 0)
+                ));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void matchSubPattern(final String str, final String pattern, final WildCardMatching.MatchResult expected) {
+        WildCardMatching.MatchResult actual = new WildCardMatching().matchSubPattern(str, pattern);
+        assertThat(actual.start).isEqualTo(expected.start);
+        assertThat(actual.end).isEqualTo(expected.end);
+        assertThat(actual.matches).isEqualTo(expected.matches);
     }
 
     private static ArgumentsBuilder arguments() {

@@ -1,8 +1,5 @@
 package fr.ninauve.renaud.leetcode.wildcardmatching;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class WildCardMatching {
 
     private static final char ANY_CHAR = '?';
@@ -22,107 +19,79 @@ public class WildCardMatching {
         }
 
         String[] splittedPattern = pattern.split("\\" + ANY_SUBSEQUENCE, -1);
-        Matcher matcher = null;
-        int subPatternIndex = -1;
-        for (int i = 0; i < string.length(); i++) {
-            char actualChar = string.charAt(i);
-            if (matcher == null) {
-                if (splittedPattern[0].isEmpty()) {
-                    matcher = new AfterWildMatcher(splittedPattern[1]);
-                    subPatternIndex = 1;
-                } else {
-                    matcher = new SimpleMatcher(splittedPattern[0]);
-                    subPatternIndex = 0;
-                }
+        String stringToProcess = string;
+        boolean wild = false;
+        int matchedPattern = 0;
+        while (matchedPattern < splittedPattern.length && !stringToProcess.isEmpty()) {
+            String subPattern = splittedPattern[matchedPattern];
+            wild = subPattern.isEmpty() || matchedPattern > 0;
+            if (subPattern.isEmpty()) {
+                matchedPattern++;
+                continue;
             }
-            if (matcher.matchedFully()) {
-                if (subPatternIndex < splittedPattern.length - 1) {
-                    subPatternIndex++;
-                    if (splittedPattern[subPatternIndex].isEmpty()) {
-                        return true;
+            MatchResult matchResult = matchSubPattern(stringToProcess, subPattern);
+            if (!matchResult.matches) {
+                return false;
+            }
+            if (!wild && matchResult.start != 0) {
+                return false;
+            }
+            matchedPattern++;
+            stringToProcess = stringToProcess.substring(Math.min(matchResult.end + 1, stringToProcess.length()));
+        }
+        return (matchedPattern == splittedPattern.length && stringToProcess.isEmpty()) ||
+                (matchedPattern >= splittedPattern.length - 1 &&
+                        (!stringToProcess.isEmpty() && matchLastPattern(stringToProcess, splittedPattern) || pattern.charAt(pattern.length() - 1) == ANY_SUBSEQUENCE));
+    }
+
+    boolean matchLastPattern(String string, String[] splittedPattern) {
+        String lastPattern = splittedPattern[splittedPattern.length - 1];
+        String endOfString = string.substring(string.length() - lastPattern.length());
+        MatchResult matchResult = matchSubPattern(endOfString, lastPattern);
+        return matchResult.matches;
+    }
+
+    MatchResult matchSubPattern(String string, String pattern) {
+        for (int start = 0; start < string.length(); start++) {
+            int i = start;
+            int matchLength = 0;
+            boolean matches = true;
+            char actual;
+            char expected;
+            while (matches && i < string.length()) {
+                actual = string.charAt(i);
+                expected = pattern.charAt(matchLength);
+                if (actual == expected || expected == ANY_CHAR) {
+                    matchLength++;
+                    i++;
+                    if (matchLength == pattern.length()) {
+                        return MatchResult.found(start, start + pattern.length() - 1);
                     }
-                    matcher = new AfterWildMatcher(splittedPattern[subPatternIndex]);
                 } else {
-                    return false;
+                    matches = false;
                 }
             }
-            if (!matcher.mayMatch(actualChar)) {
-                return false;
-            }
         }
-        return matcher.matchedFully()
-                && (subPatternIndex == splittedPattern.length - 1 || subPatternIndex == splittedPattern.length - 2 && splittedPattern[splittedPattern.length - 1].isEmpty());
+        return MatchResult.notFound();
     }
 
-    private interface Matcher {
-        boolean mayMatch(char actualChar);
+    static class MatchResult {
+        final int start;
+        final int end;
+        final boolean matches;
 
-        boolean matchesEndOfString();
-
-        boolean matchedFully();
-    }
-
-    private static class AfterWildMatcher implements Matcher {
-        private final String pattern;
-        private List<SimpleMatcher> matchers = new ArrayList<>();
-
-        private AfterWildMatcher(String pattern) {
-            this.pattern = pattern;
+        static MatchResult found(int start, int end) {
+            return new MatchResult(start, end, true);
         }
 
-        @Override
-        public boolean mayMatch(char actualChar) {
-            final List<SimpleMatcher> allMatchers = new ArrayList<>(matchers);
-            SimpleMatcher newMatcher = new SimpleMatcher(pattern);
-            allMatchers.add(newMatcher);
-            matchers = allMatchers.stream().filter(m -> m.mayMatch(actualChar))
-                    .toList();
-            return true;
+        static MatchResult notFound() {
+            return new MatchResult(-1, -1, false);
         }
 
-        @Override
-        public boolean matchesEndOfString() {
-            final List<SimpleMatcher> allMatchers = new ArrayList<>(matchers);
-            SimpleMatcher newMatcher = new SimpleMatcher(pattern);
-            allMatchers.add(newMatcher);
-            matchers = allMatchers.stream().filter(SimpleMatcher::matchesEndOfString)
-                    .toList();
-            return !matchers.isEmpty();
-        }
-
-        @Override
-        public boolean matchedFully() {
-            return matchers.stream().anyMatch(SimpleMatcher::matchedFully);
-        }
-    }
-
-    private static class SimpleMatcher implements Matcher {
-        private final String pattern;
-        private int index = -1;
-
-        private SimpleMatcher(String pattern) {
-            this.pattern = pattern;
-        }
-
-        @Override
-        public boolean mayMatch(char actualChar) {
-            index++;
-            if (index >= pattern.length()) {
-                return false;
-            }
-            char expected = pattern.charAt(index);
-            return actualChar == expected
-                    || expected == ANY_CHAR;
-        }
-
-        @Override
-        public boolean matchesEndOfString() {
-            return matchedFully();
-        }
-
-        @Override
-        public boolean matchedFully() {
-            return index == pattern.length() - 1;
+        MatchResult(int start, int end, boolean matches) {
+            this.start = start;
+            this.end = end;
+            this.matches = matches;
         }
     }
 }
