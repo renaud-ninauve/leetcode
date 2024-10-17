@@ -44,7 +44,7 @@ public class WildCardMatching {
         }
         return (matchedPattern == splittedPattern.length && stringToProcess.isEmpty()) ||
                 (wild && matchedPattern >= splittedPattern.length - 1 &&
-                        (!stringToProcess.isEmpty() && matchLastPattern(stringToProcess, splittedPattern) || pattern.charAt(pattern.length() - 1) == ANY_SUBSEQUENCE));
+                        (!stringToProcess.isEmpty() && matchLastPattern(string, splittedPattern) || pattern.charAt(pattern.length() - 1) == ANY_SUBSEQUENCE));
     }
 
     boolean matchLastPattern(String string, String[] splittedPattern) {
