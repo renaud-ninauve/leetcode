@@ -77,7 +77,15 @@ class WildCardMatchingTest {
                 arguments()
                         .string("adceb")
                         .pattern("*a*b")
-                        .expected(true)
+                        .expected(true),
+                arguments()
+                        .string("aa")
+                        .pattern("a")
+                        .expected(false),
+                arguments()
+                        .string("abc")
+                        .pattern("*ab")
+                        .expected(false)
         );
     }
 

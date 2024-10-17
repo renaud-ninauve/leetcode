@@ -39,13 +39,19 @@ public class WildCardMatching {
             matchedPattern++;
             stringToProcess = stringToProcess.substring(Math.min(matchResult.end + 1, stringToProcess.length()));
         }
+        if (pattern.charAt(pattern.length() - 1) == ANY_SUBSEQUENCE) {
+            wild = true;
+        }
         return (matchedPattern == splittedPattern.length && stringToProcess.isEmpty()) ||
-                (matchedPattern >= splittedPattern.length - 1 &&
+                (wild && matchedPattern >= splittedPattern.length - 1 &&
                         (!stringToProcess.isEmpty() && matchLastPattern(stringToProcess, splittedPattern) || pattern.charAt(pattern.length() - 1) == ANY_SUBSEQUENCE));
     }
 
     boolean matchLastPattern(String string, String[] splittedPattern) {
         String lastPattern = splittedPattern[splittedPattern.length - 1];
+        if (string.length() < lastPattern.length()) {
+            return false;
+        }
         String endOfString = string.substring(string.length() - lastPattern.length());
         MatchResult matchResult = matchSubPattern(endOfString, lastPattern);
         return matchResult.matches;
