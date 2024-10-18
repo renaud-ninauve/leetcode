@@ -5,8 +5,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,20 +16,33 @@ class WordLadderTest {
         return Stream.of(
                 toWordTreeArguments()
                         .beginWord("a")
-                        .wordList("a")
-                        .expected(new WordLadder.Node("a", List.of())),
+                        .wordList()
+                        .expectNode("a", List.of())
+                        .build(),
 
                 toWordTreeArguments()
                         .beginWord("a")
                         .wordList("b")
-                        .expected(new WordLadder.Node("a", List.of(new WordLadder.Node("b", List.of()))))
+                        .expectNode("a", List.of("b"))
+                        .expectNode("b", List.of("a"))
+                        .build(),
+
+                toWordTreeArguments()
+                        .beginWord("aaa")
+                        .wordList("abc",  "aba", "xxx", "abb")
+                        .expectNode("aaa", List.of("aba"))
+                        .expectNode("aba", List.of("aaa", "abc", "abb"))
+                        .expectNode("abb", List.of("aba", "abc"))
+                        .expectNode("abc", List.of("aba", "abb"))
+                        .expectNode("xxx", List.of())
+                        .build()
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void toWordTree(String beginWord, List<String> wordList, WordLadder.Node expected) {
-        WordLadder.Node actual = new WordLadder().toWordTree(beginWord, wordList);
+    void toWordTree(String beginWord, List<String> wordList, Map<String, WordLadder.Node> expected) {
+        Map<String, WordLadder.Node> actual = new WordLadder().toWordTree(beginWord, wordList);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -52,6 +64,7 @@ class WordLadderTest {
     static class ToWordTreeArgumentsBuilder {
         private String beginWord;
         private List<String> wordList;
+        private Map<String, WordLadder.Node> expected = new HashMap<>();
 
         ToWordTreeArgumentsBuilder beginWord(String beginWord) {
             this.beginWord = beginWord;
@@ -63,7 +76,12 @@ class WordLadderTest {
             return this;
         }
 
-        Arguments expected(WordLadder.Node expected) {
+        ToWordTreeArgumentsBuilder expectNode(String word, List<String> words) {
+            expected.put(word, new WordLadder.Node(word, new HashSet<>(words)));
+            return this;
+        }
+
+        Arguments build() {
             return Arguments.of(beginWord, wordList, expected);
         }
     }
