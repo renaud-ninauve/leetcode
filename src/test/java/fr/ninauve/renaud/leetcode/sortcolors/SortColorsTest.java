@@ -23,4 +23,11 @@ class SortColorsTest {
         new SortColors().sortColors(colors);
         assertThat(colors).isEqualTo(expected);
     }
+
+    @ParameterizedTest
+    @MethodSource("sortColors")
+    void sortColors2(int[] colors, int[] expected) {
+        new SortColors2().sortColors(colors);
+        assertThat(colors).isEqualTo(expected);
+    }
 }
