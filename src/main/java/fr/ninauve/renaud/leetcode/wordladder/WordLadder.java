@@ -28,6 +28,9 @@ public class WordLadder {
             this.minHop = minHop == 0 ? hop : Math.min(minHop, hop);
             return;
         }
+        if (minHop > 0 && hop >= minHop) {
+            return;
+        }
         for (String child : current.children) {
             if (visited.contains(child)) {
                 continue;
