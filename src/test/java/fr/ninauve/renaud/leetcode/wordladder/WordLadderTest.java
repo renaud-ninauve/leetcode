@@ -15,21 +15,18 @@ class WordLadderTest {
     static Stream<Arguments> toWordTree() {
         return Stream.of(
                 toWordTreeArguments()
-                        .beginWord("a")
-                        .wordList()
+                        .wordList("a")
                         .expectNode("a", List.of())
                         .build(),
 
                 toWordTreeArguments()
-                        .beginWord("a")
-                        .wordList("b")
+                        .wordList("a", "b")
                         .expectNode("a", List.of("b"))
                         .expectNode("b", List.of("a"))
                         .build(),
 
                 toWordTreeArguments()
-                        .beginWord("aaa")
-                        .wordList("abc",  "aba", "xxx", "abb")
+                        .wordList("aaa", "abc",  "aba", "xxx", "abb")
                         .expectNode("aaa", List.of("aba"))
                         .expectNode("aba", List.of("aaa", "abc", "abb"))
                         .expectNode("abb", List.of("aba", "abc"))
@@ -41,8 +38,8 @@ class WordLadderTest {
 
     @ParameterizedTest
     @MethodSource
-    void toWordTree(String beginWord, List<String> wordList, Map<String, WordLadder.Node> expected) {
-        Map<String, WordLadder.Node> actual = new WordLadder().toWordTree(beginWord, wordList);
+    void toWordTree(List<String> wordList, Map<String, WordLadder.Node> expected) {
+        Map<String, WordLadder.Node> actual = new WordLadder().toWordTree(wordList);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -62,14 +59,8 @@ class WordLadderTest {
     }
 
     static class ToWordTreeArgumentsBuilder {
-        private String beginWord;
         private List<String> wordList;
         private Map<String, WordLadder.Node> expected = new HashMap<>();
-
-        ToWordTreeArgumentsBuilder beginWord(String beginWord) {
-            this.beginWord = beginWord;
-            return this;
-        }
 
         ToWordTreeArgumentsBuilder wordList(String... wordList) {
             this.wordList = Arrays.asList(wordList);
@@ -82,7 +73,7 @@ class WordLadderTest {
         }
 
         Arguments build() {
-            return Arguments.of(beginWord, wordList, expected);
+            return Arguments.of(wordList, expected);
         }
     }
 }

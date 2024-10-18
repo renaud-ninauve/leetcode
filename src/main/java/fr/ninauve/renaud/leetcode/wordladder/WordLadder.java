@@ -11,16 +11,13 @@ public class WordLadder {
         return 0;
     }
 
-    Map<String, Node> toWordTree(String beginWord, List<String> wordList) {
-        final List<String> allWords = new ArrayList<>(wordList);
-        allWords.add(beginWord);
-
-        final Map<String, Node> nodes = allWords.stream()
+    Map<String, Node> toWordTree(List<String> wordList) {
+        final Map<String, Node> nodes = wordList.stream()
                 .map(Node::new)
                 .collect(Collectors.toMap(node -> node.value, Function.identity()));
 
-        final List<String> todo = new ArrayList<>(allWords);
-        for(String word: allWords) {
+        final List<String> todo = new ArrayList<>(wordList);
+        for(String word: wordList) {
             todo.remove(word);
             Node node = nodes.get(word);
             for(String otherWord: todo) {
