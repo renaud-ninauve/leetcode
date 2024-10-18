@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,10 +37,27 @@ class WordLadderTest {
         );
     }
 
+    static Stream<Arguments> ladderLength() {
+        return Stream.of(
+                Arguments.of("a", "a", List.of("a"), 1),
+                Arguments.of("a", "b", List.of("c"), 0),
+                Arguments.of("a", "b", List.of("a", "b"), 2),
+                Arguments.of("aaa", "abc", List.of("aaa", "abc",  "aba", "xxx", "abb"), 3),
+                Arguments.of("hit", "cog", List.of("hot","dot","dog","lot","log","cog"), 5)
+        );
+    }
+
     @ParameterizedTest
     @MethodSource
     void toWordTree(List<String> wordList, Map<String, WordLadder.Node> expected) {
         Map<String, WordLadder.Node> actual = new WordLadder().toWordTree(wordList);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void ladderLength(String beginWord, String endWord, List<String> wordList, int expected) {
+        int actual = new WordLadder().ladderLength(beginWord, endWord, wordList);
         assertThat(actual).isEqualTo(expected);
     }
 
