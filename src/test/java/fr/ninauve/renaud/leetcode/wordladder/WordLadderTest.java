@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,15 +48,15 @@ class WordLadderTest {
 
     @ParameterizedTest
     @MethodSource
-    void toWordTree(List<String> wordList, Map<String, WordLadder.Node> expected) {
-        Map<String, WordLadder.Node> actual = new WordLadder().toWordTree(wordList);
+    void toWordTree(List<String> wordList, Map<String, WordLadderNaive.Node> expected) {
+        Map<String, WordLadderNaive.Node> actual = new WordLadderNaive().toWordTree(wordList);
         assertThat(actual).isEqualTo(expected);
     }
 
     @ParameterizedTest
     @MethodSource
     void ladderLength(String beginWord, String endWord, List<String> wordList, int expected) {
-        int actual = new WordLadder().ladderLength(beginWord, endWord, wordList);
+        int actual = new WordLadderNaive().ladderLength(beginWord, endWord, wordList);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -68,7 +67,7 @@ class WordLadderTest {
             "aaaa;aabb;false"
     })
     void differsByOneLetter(String a, String b, boolean expected) {
-        boolean actual = new WordLadder().differsByOneLetter(a, b);
+        boolean actual = new WordLadderNaive().differsByOneLetter(a, b);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -78,7 +77,7 @@ class WordLadderTest {
 
     static class ToWordTreeArgumentsBuilder {
         private List<String> wordList;
-        private Map<String, WordLadder.Node> expected = new HashMap<>();
+        private Map<String, WordLadderNaive.Node> expected = new HashMap<>();
 
         ToWordTreeArgumentsBuilder wordList(String... wordList) {
             this.wordList = Arrays.asList(wordList);
@@ -86,7 +85,7 @@ class WordLadderTest {
         }
 
         ToWordTreeArgumentsBuilder expectNode(String word, List<String> words) {
-            expected.put(word, new WordLadder.Node(word, new HashSet<>(words)));
+            expected.put(word, new WordLadderNaive.Node(word, new HashSet<>(words)));
             return this;
         }
 

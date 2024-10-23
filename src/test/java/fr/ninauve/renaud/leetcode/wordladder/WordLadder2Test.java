@@ -28,7 +28,7 @@ class WordLadder2Test {
     @ParameterizedTest
     @MethodSource
     void ladderLength(String beginWord, String endWord, List<String> wordList, int expected) {
-        int actual = new WordLadder2().ladderLength(beginWord, endWord, wordList);
+        int actual = new WordLadder().ladderLength(beginWord, endWord, wordList);
         assertThat(actual).isEqualTo(expected);
     }
 }
