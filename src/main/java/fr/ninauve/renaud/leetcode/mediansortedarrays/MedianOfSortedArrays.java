@@ -3,6 +3,7 @@ package fr.ninauve.renaud.leetcode.mediansortedarrays;
 // https://leetcode.com/problems/median-of-two-sorted-arrays
 public class MedianOfSortedArrays {
 
+    // not working
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         if (nums1.length == 0) {
             return medianOf(nums2);
