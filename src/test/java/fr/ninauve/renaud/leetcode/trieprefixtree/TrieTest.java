@@ -14,14 +14,19 @@ class TrieTest {
     static Stream<Arguments> search() {
         return Stream.of(
                 Arguments.of(List.of(), "toto", false),
-                Arguments.of(List.of(), "", true)
+                Arguments.of(List.of(), "", true),
+                Arguments.of(List.of("tata", "toto"), "toto", true),
+                Arguments.of(List.of("tata", "toto"), "xxxx", false),
+                Arguments.of(List.of("tata", "toto"), "to", false)
         );
     }
 
     static Stream<Arguments> startsWith() {
         return Stream.of(
                 Arguments.of(List.of(), "toto", false),
-                Arguments.of(List.of(), "", true)
+                Arguments.of(List.of(), "", true),
+                Arguments.of(List.of("efgh", "abcd"), "ab", true),
+                Arguments.of(List.of("efgh", "abcd"), "xx", false)
         );
     }
 
