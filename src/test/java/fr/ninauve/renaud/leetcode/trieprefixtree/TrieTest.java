@@ -17,7 +17,8 @@ class TrieTest {
                 Arguments.of(List.of(), "", true),
                 Arguments.of(List.of("tata", "toto"), "toto", true),
                 Arguments.of(List.of("tata", "toto"), "xxxx", false),
-                Arguments.of(List.of("tata", "toto"), "to", false)
+                Arguments.of(List.of("tata", "toto"), "to", false),
+                Arguments.of(List.of("toto", "to"), "to", true)
         );
     }
 

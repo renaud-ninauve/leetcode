@@ -7,7 +7,7 @@ import java.util.Optional;
 
 // https://leetcode.com/problems/implement-trie-prefix-tree/
 class Trie {
-    Node root = new Node(null);
+    Node root = new Node(null, true);
 
     public Trie() {
 
@@ -28,10 +28,11 @@ class Trie {
                 currentNode = matchingNode.get();
             }
         }
+        currentNode.endWord = true;
     }
 
     public boolean search(String word) {
-        return findNodeStartingWith(word).stream().anyMatch(Node::isLeaf);
+        return findNodeStartingWith(word).stream().anyMatch(Node::isEndWord);
     }
 
     public boolean startsWith(String prefix) {
@@ -56,13 +57,19 @@ class Trie {
     static class Node {
         Character value;
         List<Node> children = new ArrayList<>();
+        boolean endWord = false;
 
         public Node(Character value) {
             this.value = value;
         }
 
-        boolean isLeaf() {
-            return children.isEmpty();
+        public Node(Character value, boolean endWord) {
+            this.value = value;
+            this.endWord = endWord;
+        }
+
+        boolean isEndWord() {
+            return endWord;
         }
     }
 }
