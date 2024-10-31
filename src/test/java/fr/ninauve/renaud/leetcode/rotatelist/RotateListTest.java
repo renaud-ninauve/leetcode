@@ -13,6 +13,7 @@ class RotateListTest {
 
     static Stream<Arguments> rotateRight() {
         return Stream.of(
+                Arguments.of(null, 12, null),
                 Arguments.of(ListNode.listNode(List.of(1, 2, 3)), 0, ListNode.listNode(List.of(1, 2, 3))),
                 Arguments.of(ListNode.listNode(List.of(1)), 3, ListNode.listNode(List.of(1))),
                 Arguments.of(ListNode.listNode(List.of(1, 2, 3, 4, 5)), 1, ListNode.listNode(List.of(5, 1, 2, 3, 4))),
