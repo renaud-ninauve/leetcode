@@ -47,17 +47,21 @@ public class ListNode {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("[");
-        toString(sb);
+        toString(sb, 1);
         sb.append("]");
         return sb.toString();
     }
 
-    private void toString(final StringBuilder sb) {
+    private void toString(final StringBuilder sb, int length) {
         sb.append(val);
-        if (next == null) {
+        if (next == null || length > 15) {
+            return;
+        }
+        if (length > 15) {
+            sb.append(", ...");
             return;
         }
         sb.append(", ");
-        next.toString(sb);
+        next.toString(sb, length + 1);
     }
 }

@@ -2,55 +2,35 @@ package fr.ninauve.renaud.leetcode.rotatelist;
 
 // https://leetcode.com/problems/rotate-list/
 public class RotateList {
-    ListNode head;
-    ListNode reversed;
-    int length;
-    ListNode result;
-    ListNode resultTail;
-
     public ListNode rotateRight(ListNode head, int k) {
         if (head == null) {
             return head;
         }
 
-        this.head = head;
-        createReverseList();
+        int length = makeCircularList(head);
         int shift = k % length;
-        if (shift == 0) {
-            return head;
-        }
-        prepend(shift);
-        append(length - shift);
-        return result;
+        int linkToCut = length - shift;
+        return cutLink(head, linkToCut);
     }
 
-    void createReverseList() {
-        reversed = new ListNode(head.val);
-        length = 1;
-        ListNode current = head;
-        while ((current = current.next) != null) {
-            reversed = new ListNode(current.val, reversed);
+    int makeCircularList(ListNode head) {
+        int length = 1;
+        ListNode node = head;
+        while (node.next != null) {
+            node = node.next;
             length++;
         }
+        node.next = head;
+        return length;
     }
 
-    void prepend(int nbElement) {
-        result = new ListNode(reversed.val);
-        resultTail = result;
-        ListNode current = reversed;
-        for (int i = 0; i < nbElement - 1; i++) {
-            current = current.next;
-            result = new ListNode(current.val, result);
+    ListNode cutLink(ListNode head, int nth) {
+        ListNode node = head;
+        for (int i = 0; i < nth - 1; i++) {
+            node = node.next;
         }
-    }
-
-    void append(int nbElement) {
-        ListNode current = head;
-        ListNode tail = resultTail;
-        for (int i = 0; i < nbElement; i++) {
-            tail.next = new ListNode(current.val);
-            tail = tail.next;
-            current = current.next;
-        }
+        ListNode newHead = node.next;
+        node.next = null;
+        return newHead;
     }
 }
