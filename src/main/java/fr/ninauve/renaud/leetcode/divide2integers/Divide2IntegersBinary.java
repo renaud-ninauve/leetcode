@@ -1,7 +1,7 @@
 package fr.ninauve.renaud.leetcode.divide2integers;
 
 // https://leetcode.com/problems/divide-two-integers/description/
-public class Divide2Integers {
+public class Divide2IntegersBinary {
 
     public int divide(int dividend, int divisor) {
         if (dividend == 0) {
@@ -85,8 +85,40 @@ public class Divide2Integers {
             if (isMax() || other.isMax()) {
                 return MAX_UNSIGNED;
             }
-            int result = this.value() + other.value();
-            return result < 0 ? MAX_UNSIGNED : new Unsigned32(result);
+
+            int result = 0;
+            boolean carry = false;
+            int a = value();
+            int b = other.value();
+            for (int i = 0; i < 32; i++) {
+                int mask = 1 << i;
+                int digitA = (a & mask) >> i;
+                int digitB = (b & mask) >> i;
+                final int digitResult;
+                if (digitA == 0) {
+                    if (digitB == 0) {
+                        digitResult = carry ? 1 : 0;
+                        carry = false;
+                    } else {
+                        digitResult = carry ? 0 : 1;
+                    }
+                } else if (digitB == 0) {
+                    digitResult = carry ? 0 : 1;
+                } else {
+                    digitResult = carry ? 1 : 0;
+                    carry = true;
+                }
+                int digitResultMask = digitResult << i;
+                result |= digitResultMask;
+            }
+            if (carry) {
+                return MAX_UNSIGNED;
+            }
+            Unsigned32 result32 = new Unsigned32(result);
+            if (result32.negativeBitIsSet()) {
+                return MAX_UNSIGNED;
+            }
+            return result32;
         }
         int toPositive() {
             if (negativeBitIsSet()) {

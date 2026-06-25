@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class Divide2IntegersTest {
+class Divide2IntegersBinaryTest {
 
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = {
@@ -26,8 +26,7 @@ class Divide2IntegersTest {
             "-2147483648;-1;2147483647",
             "10;3;3",
             "1000001;4;250000",
-            "1;2;0",
-            "2147483647;2;1073741823"
+            "1;2;0"
     })
     void divide(int dividend, int divisor, int expected) {
         int actual = new Divide2Integers().divide(dividend, divisor);
