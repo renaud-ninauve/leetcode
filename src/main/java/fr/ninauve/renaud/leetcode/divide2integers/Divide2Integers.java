@@ -23,6 +23,9 @@ public class Divide2Integers {
         if (divisor.equals(new Unsigned32(1))) {
             return dividend;
         }
+        if (divisor.equals(new Unsigned32(2))) {
+            return new Unsigned32(dividend.value() >> 1);
+        }
         if (dividend.lessThan(divisor)) {
             return new Unsigned32(0);
         }

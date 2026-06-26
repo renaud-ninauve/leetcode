@@ -27,7 +27,8 @@ class Divide2IntegersTest {
             "10;3;3",
             "1000001;4;250000",
             "1;2;0",
-            "2147483647;2;1073741823"
+            "2147483647;2;1073741823",
+            "2147483647;3;715827882"
     })
     void divide(int dividend, int divisor, int expected) {
         int actual = new Divide2Integers().divide(dividend, divisor);
