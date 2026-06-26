@@ -10,36 +10,22 @@ public class Zigzag {
         if (numRows == 1) {
             return s;
         }
-        if (numRows == 2) {
-            return convertNumRows2(s);
-        }
 
         List<StringBuilder> rows = createRows(numRows);
-        final int diagWith = Math.max(1, numRows - 2);
-        final int patternWidth = numRows + diagWith;
-        final int maxDiagRow = numRows - 1;
+        int col = numRows - 1;
+        int row = 1;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            int mod = i % patternWidth;
-            if (mod + 1 < numRows) {
-                rows.get(mod).append(c);
+            if (col == 0 && row < numRows-1) {
+                row++;
+            } else if (col < numRows - 2){
+                col++;
+                row--;
             } else {
-                final int row;
-                row = maxDiagRow - (mod + 1 - numRows);
-                rows.get(row).append(c);
+                col = 0;
+                row = 0;
             }
-        }
-        return rows.stream()
-                .map(StringBuilder::toString)
-                .collect(Collectors.joining());
-    }
-
-    private String convertNumRows2(String s) {
-        List<StringBuilder> rows = createRows(2);
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            int mod = i % 2;
-            rows.get(mod).append(c);
+            rows.get(row).append(c);
         }
         return rows.stream()
                 .map(StringBuilder::toString)
