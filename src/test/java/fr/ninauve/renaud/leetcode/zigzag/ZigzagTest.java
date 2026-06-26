@@ -38,6 +38,14 @@ class ZigzagTest {
                                 A   L S  I G
                                 Y A   H R
                                 P     I
+                                """),
+                Arguments.of("ABCDEF", 1, "ABCDEF"),
+                Arguments.of(
+                        "ABCD",
+                        2,
+                        """
+                                A C
+                                B D
                                 """)
         );
     }
