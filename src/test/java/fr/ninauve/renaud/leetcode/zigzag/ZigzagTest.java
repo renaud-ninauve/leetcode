@@ -58,4 +58,13 @@ class ZigzagTest {
         String expected = toOneLineString(expectedZigzag);
         assertThat(actual).isEqualTo(expected);
     }
+
+    @ParameterizedTest
+    @MethodSource("should_convert")
+    void should_convert2(String s, int numRows, String expectedZigzag) {
+        String actual = new Zigzag2().convert(s, numRows);
+
+        String expected = toOneLineString(expectedZigzag);
+        assertThat(actual).isEqualTo(expected);
+    }
 }
