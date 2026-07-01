@@ -2,87 +2,164 @@ package fr.ninauve.renaud.leetcode.zuma;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Zuma {
-    private static final Pattern TRI_PATTERN = Pattern.compile("RRR|YYY|BBB|GGG|WWW");
 
     public int findMinStep(String board, String hand) {
-        NavigableSet<Group> groups = toGroups(board);
-        Map<Character, Integer> maxCountByColor = maxCountByColor(groups);
-        Map<Character, Integer> handColors = sumByColor(hand);
-        Map<Character, Integer> filteredHandColors = handColors.entrySet().stream()
-                .filter(hc -> {
-                    Character color = hc.getKey();
-                    Integer handCount = hc.getValue();
-                    Integer maxBoardCount = maxCountByColor.getOrDefault(color, 0);
-                    return maxBoardCount + handCount >= 3;
-                }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        if (filteredHandColors.isEmpty()) {
-            return -1;
-        }
-        return 0;
+        Board board0 = toBoard(board);
+        Hand hand0 = toHand(hand);
+        return findMinStep(board0, hand0);
     }
 
-    private Map<Character, Integer> maxCountByColor(NavigableSet<Group> groups) {
-        record ColorCount(char color, int count) {
-        }
-        return groups.stream()
-                .map(g -> new ColorCount(g.color(), g.length()))
-                .collect(Collectors.groupingBy(ColorCount::color,
-                        Collectors.mapping(
-                                ColorCount::count,
-                                Collectors.reducing(0, Math::max)
-                        )));
-    }
+    int findMinStep(Board board0, Hand hand0) {
+        int min = -1;
+        Queue<Path> queue = new LinkedList<>();
+        queue.offer(new Path(board0, hand0));
+        while (!queue.isEmpty()) {
+            Path path = queue.poll();
+            Board board = path.board();
+            Hand hand = path.hand();
 
-    private Map<Character, Integer> sumByColor(String hand) {
-        Map<Character, Integer> sumByColor = new HashMap<>();
-        for (char c : hand.toCharArray()) {
-            sumByColor.compute(c, (color, previousSum) -> previousSum == null ? 1 : previousSum + 1);
-        }
-        return sumByColor;
-    }
-
-    NavigableSet<Group> toGroups(String board) {
-        NavigableSet<Group> groups = new TreeSet<>(Comparator.comparing(Group::start));
-        int sameCount = 1;
-        char previous = 'X';
-        for (int i = 0; i < board.length(); i++) {
-            char current = board.charAt(i);
-            if (i == 0) {
-                previous = current;
+            int played = hand0.size() - hand.size();
+            if (board.isEmpty()) {
+                min = min == -1 ? played : Math.min(min, played);
                 continue;
             }
-            if (current == previous) {
-                sameCount++;
-            } else {
-                groups.add(new Group(previous, i - sameCount, sameCount));
-                sameCount = 1;
+            if (hand.isEmpty()) {
+                continue;
             }
-            if (i == board.length() - 1) {
-                groups.add(new Group(current, i - sameCount + 1, sameCount));
+            if (min != -1 && played >= min) {
+                continue;
             }
-            previous = current;
+
+            for (int i = 0; i < board.size(); i++) {
+                ColoredBall current = board.ballAt(i);
+                if (i > 0 && Objects.equals(current, board.ballAt(i - 1))) {
+                    continue;
+                }
+                final List<ColoredBall> playableBalls = new ArrayList<>();
+                if (i > 0) {
+                    playableBalls.add(board.ballAt(i - 1));
+                }
+                playableBalls.add(board.ballAt(i));
+                playableBalls.retainAll(hand.colors());
+                for (ColoredBall playableBall : playableBalls) {
+                    Board newBoard = board.insert(i, playableBall);
+                    Hand newHand = hand.remove(playableBall);
+                    queue.add(new Path(newBoard, newHand));
+                }
+            }
         }
-        return groups;
+        return min;
     }
 
-    public String deleteTris(String board) {
-        String result = board;
-        Matcher matcher;
-        while ((matcher = TRI_PATTERN.matcher(result)).find()) {
-            int start = matcher.start();
-            int end = matcher.end();
-            final String beforeMatch = start > 0 ? result.substring(0, start) : "";
-            final String afterMatch = end < result.length() ? result.substring(end) : "";
-            result = beforeMatch + afterMatch;
-        }
-        return result;
+    record Path(Board board, Hand hand) {
     }
 
-    record Group(char color, int start, int length) {
+    static void deleteBiggerThanTris(List<ColoredBall> board) {
+        int previousSize;
+        do {
+            previousSize = board.size();
+            int count = 1;
+            int i = 0;
+            while (i < board.size()) {
+                ColoredBall current = board.get(i);
+                if (i == 0) {
+                    i++;
+                    continue;
+                }
+                ColoredBall previous = board.get(i - 1);
+                if (Objects.equals(current, previous)) {
+                    count++;
+                } else {
+                    if (count >= 3) {
+                        i = deleteUpToExcluded(board, i, count);
+                    }
+                    count = 1;
+                }
+                i++;
+            }
+            if (count >= 3) {
+                deleteUpToExcluded(board, board.size(), count);
+            }
+        } while (board.size() < previousSize);
+    }
+
+    static int deleteUpToExcluded(List<ColoredBall> board, int upTo, int count) {
+        int indexToDelete = upTo - count;
+        for (int j = 0; j < count; j++) {
+            board.remove(indexToDelete);
+        }
+        return indexToDelete;
+    }
+
+    static Board toBoard(String board) {
+        List<ColoredBall> coloredBalls = new ArrayList<>();
+        for (int i = 0; i < board.length(); i++) {
+            char current = board.charAt(i);
+            coloredBalls.add(new ColoredBall(current));
+        }
+        return new Board(coloredBalls);
+    }
+
+    static Hand toHand(String hand) {
+        Map<ColoredBall, Integer> sumByColor = new HashMap<>();
+        for (char c : hand.toCharArray()) {
+            ColoredBall current = new ColoredBall(c);
+            sumByColor.compute(current, (coloredBall, previousSum) -> previousSum == null ? 1 : previousSum + 1);
+        }
+        return new Hand(sumByColor);
+    }
+
+    record Hand(Map<ColoredBall, Integer> countsByColor) {
+        Set<ColoredBall> colors() {
+            return countsByColor.entrySet()
+                    .stream()
+                    .filter(e -> e.getValue() > 0)
+                    .map(Entry::getKey)
+                    .collect(Collectors.toSet());
+        }
+
+        Hand remove(ColoredBall coloredBall) {
+            Map<ColoredBall, Integer> newHand = new HashMap<>(countsByColor);
+            newHand.computeIfPresent(coloredBall, (key, count) -> count - 1);
+            return new Hand(newHand);
+        }
+
+        int size() {
+            return countsByColor.values()
+                    .stream()
+                    .mapToInt(i -> i)
+                    .sum();
+        }
+
+        boolean isEmpty() {
+            return colors().isEmpty();
+        }
+    }
+
+    record Board(List<ColoredBall> coloredBalls) {
+        Board insert(int index, ColoredBall newBall) {
+            List<ColoredBall> newBalls = new ArrayList<>(coloredBalls);
+            newBalls.add(index, newBall);
+            deleteBiggerThanTris(newBalls);
+            return new Board(newBalls);
+        }
+
+        ColoredBall ballAt(int index) {
+            return coloredBalls.get(index);
+        }
+
+        int size() {
+            return coloredBalls.size();
+        }
+
+        boolean isEmpty() {
+            return coloredBalls().isEmpty();
+        }
+    }
+
+    record ColoredBall(char color) {
     }
 }
