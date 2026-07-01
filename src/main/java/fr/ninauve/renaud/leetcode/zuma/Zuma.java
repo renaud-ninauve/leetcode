@@ -13,13 +13,18 @@ public class Zuma {
     }
 
     int findMinStep(Board board0, Hand hand0) {
+        Set<Turn> visited = new HashSet<>();
         int min = -1;
-        Queue<Path> queue = new LinkedList<>();
-        queue.offer(new Path(board0, hand0));
+        Queue<Turn> queue = new LinkedList<>();
+        queue.offer(new Turn(board0, hand0));
         while (!queue.isEmpty()) {
-            Path path = queue.poll();
-            Board board = path.board();
-            Hand hand = path.hand();
+            Turn turn = queue.poll();
+            if (visited.contains(turn)) {
+                continue;
+            }
+            visited.add(turn);
+            Board board = turn.board();
+            Hand hand = turn.hand();
 
             int played = hand0.size() - hand.size();
             if (board.isEmpty()) {
@@ -34,27 +39,20 @@ public class Zuma {
             }
 
             for (int i = 0; i < board.size(); i++) {
-                ColoredBall current = board.ballAt(i);
-                if (i > 0 && Objects.equals(current, board.ballAt(i - 1))) {
-                    continue;
-                }
-                final List<ColoredBall> playableBalls = new ArrayList<>();
-                if (i > 0) {
-                    playableBalls.add(board.ballAt(i - 1));
-                }
-                playableBalls.add(board.ballAt(i));
-                playableBalls.retainAll(hand.colors());
-                for (ColoredBall playableBall : playableBalls) {
+                for (ColoredBall playableBall : hand.colors()) {
+                    if (i > 0 && Objects.equals(playableBall, board.ballAt(i-1))) {
+                        continue;
+                    }
                     Board newBoard = board.insert(i, playableBall);
                     Hand newHand = hand.remove(playableBall);
-                    queue.add(new Path(newBoard, newHand));
+                    queue.add(new Turn(newBoard, newHand));
                 }
             }
         }
         return min;
     }
 
-    record Path(Board board, Hand hand) {
+    record Turn(Board board, Hand hand) {
     }
 
     static void deleteBiggerThanTris(List<ColoredBall> board) {
@@ -146,15 +144,15 @@ public class Zuma {
             deleteBiggerThanTris(newBalls);
             return new Board(newBalls);
         }
-
         ColoredBall ballAt(int index) {
             return coloredBalls.get(index);
         }
-
+        Set<ColoredBall> colors() {
+            return new HashSet<>(coloredBalls);
+        }
         int size() {
             return coloredBalls.size();
         }
-
         boolean isEmpty() {
             return coloredBalls().isEmpty();
         }

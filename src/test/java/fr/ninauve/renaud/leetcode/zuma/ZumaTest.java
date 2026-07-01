@@ -22,7 +22,9 @@ class ZumaTest {
             "WRRBBW RB -1",
             "WWRRBBWW WRBRW 2",
             "G GGGGG 2",
-            "RRWWRRBBRR WB 2"
+            "RRWWRRBBRR WB 2",
+            "BGGRRYY BBYRG 5",
+            "RRYGGYYRRYYGGYRR GGBBB 5"
     })
     void should_findMinStep(String board, String hand, int expected) {
         int actual = new Zuma().findMinStep(board, hand);
@@ -55,7 +57,10 @@ class ZumaTest {
                         toBoard("RR"), 1, new ColoredBall('B'), toBoard("RBR"),
                         toBoard("RR"), 2, new ColoredBall('B'), toBoard("RRB"),
                         toBoard("RR"), 0, new ColoredBall('R'), toBoard(""),
-                        toBoard("RRBBR"), 2, new ColoredBall('B'), toBoard("")
+                        toBoard("RRBBR"), 2, new ColoredBall('B'), toBoard(""),
+                        toBoard("RRWWRRBBRR"), 2, new ColoredBall('W'), toBoard("BBRR"),
+                        toBoard("RRWWRRBBRR"), 2, new ColoredBall('R'), toBoard("WWRRBBRR"),
+                        toBoard("RRWWRRBBRR"), 6, new ColoredBall('B'), toBoard("RRWW")
                 )
         );
     }
