@@ -39,10 +39,15 @@ public class Zuma {
             }
 
             for (int i = 0; i < board.size(); i++) {
-                for (ColoredBall playableBall : hand.colors()) {
-                    if (i > 0 && Objects.equals(playableBall, board.ballAt(i-1))) {
-                        continue;
-                    }
+                ColoredBall coloredBall = board.ballAt(i);
+                Set<ColoredBall> playableColors = new HashSet<>();
+                if (hand.colors().contains(coloredBall)) {
+                    playableColors.add(coloredBall);
+                }
+                if (i > 0 && Objects.equals(coloredBall, board.ballAt(i - 1))) {
+                    playableColors.addAll(hand.colors());
+                }
+                for (ColoredBall playableBall : playableColors) {
                     Board newBoard = board.insert(i, playableBall);
                     Hand newHand = hand.remove(playableBall);
                     queue.add(new Turn(newBoard, newHand));
@@ -144,15 +149,19 @@ public class Zuma {
             deleteBiggerThanTris(newBalls);
             return new Board(newBalls);
         }
+
         ColoredBall ballAt(int index) {
             return coloredBalls.get(index);
         }
+
         Set<ColoredBall> colors() {
             return new HashSet<>(coloredBalls);
         }
+
         int size() {
             return coloredBalls.size();
         }
+
         boolean isEmpty() {
             return coloredBalls().isEmpty();
         }
