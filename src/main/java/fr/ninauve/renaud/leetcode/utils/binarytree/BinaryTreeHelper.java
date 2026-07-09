@@ -1,5 +1,8 @@
 package fr.ninauve.renaud.leetcode.utils.binarytree;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 class BinaryTreeHelper {
 
     /**
@@ -10,16 +13,61 @@ class BinaryTreeHelper {
      * The array index is the pre-order position.
      * null stands for absence of node.
      * example:
-     *               0
-     *       1               2
-     *   3       4       5       6
-     *  7 8     9 10   11 12   13 14
+     * 0
+     * 1               2
+     * 3       4       5       6
+     * 7 8     9 10   11 12   13 14
      *
-     * @param   preOrderBinaryTree  binary tree in pre-order
-     * @return  binaryTree
+     * @param preOrderBinaryTree binary tree in pre-order
+     * @return binaryTree
      */
     static TreeNode parse(String preOrderBinaryTree) {
-        return null;
+        String[] preOrderArray = preOrderBinaryTree.substring(1, preOrderBinaryTree.length() - 1).split(",");
+        int length = preOrderArray.length;
+        if (length == 0) {
+            return null;
+        }
+
+        int maxDepth = maxDepth(length);
+        TreeNode root = parseValue(preOrderArray[0]);
+        List<TreeNode> parents = List.of(root);
+        for (int depth = 1; depth <= maxDepth; depth++) {
+            int countAtDepth = 1 << depth;
+            for (int i = 0; i < countAtDepth; i++) {
+                int index = countAtDepth - 1 + i;
+                TreeNode node = parseValue(preOrderArray[index]);
+                TreeNode parent = parents.get(i / 2);
+                if (parent == null && node != null) {
+                    throw new IllegalArgumentException("");
+                } else if (node == null) {
+                    continue;
+                }
+                if (i % 2 == 0) {
+                    parent.left = node;
+                } else {
+                    parent.right = node;
+                }
+            }
+            parents = parents.stream()
+                    .flatMap(parent -> parent != null ? Stream.of(parent.left, parent.right) : Stream.of(null, null))
+                    .toList();
+        }
+        return root;
+    }
+
+    static int maxDepth(int length) {
+        int pow2 = 0;
+        int shiftLeft = length;
+        while ((shiftLeft = shiftLeft >> 1) > 0) {
+            pow2++;
+        }
+        return pow2;
+    }
+
+    static TreeNode parseValue(String value) {
+        return "null".equals(value)
+                ? null
+                : new TreeNode(Integer.parseInt(value));
     }
 
     static boolean nodesAreEquals(TreeNode a, TreeNode b) {
