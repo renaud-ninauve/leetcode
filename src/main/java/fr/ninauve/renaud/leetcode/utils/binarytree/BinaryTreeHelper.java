@@ -1,5 +1,6 @@
 package fr.ninauve.renaud.leetcode.utils.binarytree;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,7 +36,7 @@ class BinaryTreeHelper {
             int countAtDepth = 1 << depth;
             for (int i = 0; i < countAtDepth; i++) {
                 int index = countAtDepth - 1 + i;
-                TreeNode node = parseValue(preOrderArray[index]);
+                TreeNode node = index < preOrderArray.length ? parseValue(preOrderArray[index]) : null;
                 TreeNode parent = parents.get(i / 2);
                 if (parent == null && node != null) {
                     throw new IllegalArgumentException("");
@@ -53,6 +54,38 @@ class BinaryTreeHelper {
                     .toList();
         }
         return root;
+    }
+
+    static List<TreeNode> preOrder(TreeNode start, int maxDepth) {
+        if (maxDepth == 0) {
+            return List.of(start);
+        }
+        List<TreeNode> result = new ArrayList<>();
+        result.add(start);
+        List<TreeNode> parents = List.of(start);
+        for (int depth = 1; depth <= maxDepth; depth++) {
+            int nbNodes = 1 << depth;
+            int firstChildIndexInResult = result.size();
+            for (int i = 0; i < nbNodes; i++) {
+                int parentIndex = i / 2;
+                if (parentIndex >= parents.size()) {
+                    result.add(null);
+                    continue;
+                }
+                TreeNode parent = parents.get(parentIndex);
+                if (parent == null) {
+                    result.add(null);
+                    continue;
+                }
+                if (i % 2 == 0) {
+                    result.add(parent.left);
+                } else {
+                    result.add(parent.right);
+                }
+            }
+            parents = new ArrayList<>(result.subList(firstChildIndexInResult, result.size()));
+        }
+        return result;
     }
 
     static int maxDepth(int length) {

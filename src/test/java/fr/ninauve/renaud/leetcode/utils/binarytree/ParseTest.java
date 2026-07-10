@@ -58,4 +58,15 @@ class ParseTest {
         TreeNode expected = new TreeNode(0, expectedDepth1.get(0), expectedDepth1.get(1));
         assertThat(nodesAreEquals(actual, expected)).isTrue();
     }
+
+    @Test
+    void should_parse_depth3_nulls2() {
+        TreeNode actual = BinaryTreeHelper.parse("[0,1,2,3,4,null,null,7,8,9,10]");
+
+        List<TreeNode> expectedDepth3 = List.of(new TreeNode(7), new TreeNode(8), new TreeNode(9), new TreeNode(10));
+        List<TreeNode> expectedDepth2 = List.of(new TreeNode(3, expectedDepth3.get(0), expectedDepth3.get(1)), new TreeNode(4, expectedDepth3.get(2), expectedDepth3.get(3)));
+        List<TreeNode> expectedDepth1 = List.of(new TreeNode(1, expectedDepth2.get(0), expectedDepth2.get(1)), new TreeNode(2, null, null));
+        TreeNode expected = new TreeNode(0, expectedDepth1.get(0), expectedDepth1.get(1));
+        assertThat(nodesAreEquals(actual, expected)).isTrue();
+    }
 }
