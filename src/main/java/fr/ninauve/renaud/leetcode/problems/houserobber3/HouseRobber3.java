@@ -1,5 +1,6 @@
 package fr.ninauve.renaud.leetcode.problems.houserobber3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +54,6 @@ public class HouseRobber3 {
         // 0 3 9 10
         // 0 7 8 4
 
-        print(root);
         for (int depth = maxDepth - 2; depth >= 0; depth--) {
             List<TreeNode> nodes = nodesAt(depth);
             for (TreeNode node : nodes) {
@@ -84,7 +84,6 @@ public class HouseRobber3 {
         //      0
         //   1    2
         //  3  4 5 6
-        print(root);
         TreeNode left = root.left != null ? root.left : new TreeNode(0);
         TreeNode right = root.right != null ? root.right : new TreeNode(0);
         // right + total(left, 2, 3, 4)
@@ -99,35 +98,6 @@ public class HouseRobber3 {
                 right.val + total(left, 3, 4, 5, 6),
                 right.val + total(left, 1, 5, 6),
                 right.val + total(left, 2, 3, 4));
-    }
-
-    void print(TreeNode tree) {
-        int maxDepth = maxDepth(tree);
-        int cellWidth = 6;
-        int width = cellWidth * (1 << maxDepth) + (1 << maxDepth);
-        for (int depth = 0; depth <= maxDepth; depth++) {
-            int nbNodes = 1 << depth;
-            int nodesWidth = cellWidth * nbNodes;
-            int paddingLength = (width - nodesWidth) / (nbNodes+1);
-            String padding = " ".repeat(paddingLength);
-            String line = nodesAt(tree, depth).stream()
-                    .map(n -> "" + n.val)
-                    .map(v -> {
-                        if (v.length() >= cellWidth) {
-                            return v;
-                        }
-                        int cellPadding = cellWidth - v.length();
-                        if (cellPadding % 2 == 0) {
-                            int paddingLeft = cellPadding / 2;
-                            return " ".repeat(paddingLeft) + v + " ".repeat(paddingLeft);
-                        } else {
-                            int paddingLeft = cellPadding / 2;
-                            int paddingRight = paddingLeft + 1;
-                            return " ".repeat(paddingRight) + v + " ".repeat(paddingLeft);
-                        }
-                    }).collect(Collectors.joining(padding));
-            System.out.println(line);
-        }
     }
 
     static int max(int... numbers) {
@@ -177,7 +147,8 @@ public class HouseRobber3 {
                     if (childIndex >= childrenAtDepth.size()) {
                         return 0;
                     }
-                    return childrenAtDepth.get(childIndex).val;
+                    TreeNode child = childrenAtDepth.get(childIndex);
+                    return child != null ? child.val : 0;
                 }).sum();
     }
 
@@ -197,20 +168,36 @@ public class HouseRobber3 {
                 .sum();
     }
 
-    List<TreeNode> nodesAt(TreeNode parent, int depth) {
+    List<TreeNode> nodesAt(TreeNode start, int depth) {
         if (depth == 0) {
-            return List.of(parent);
+            return List.of(start);
         }
-        int currentDepth = 0;
-        List<TreeNode> nodes = List.of(parent);
-        while (!nodes.isEmpty() && currentDepth < depth) {
-            currentDepth++;
-            nodes = nodes.stream()
-                    .flatMap(n -> Stream.of(n.left, n.right))
-                    .map(n -> n != null ? n : new TreeNode(0))
-                    .toList();
+        List<TreeNode> parents = List.of(start);
+        for (int currentDepth = 1; currentDepth <= depth; currentDepth++) {
+            int nodesCount = 1 << currentDepth;
+            List<TreeNode> nodes = new ArrayList<>();
+            for (int i = 0; i < nodesCount; i++) {
+                int parentIndex = i / 2;
+                if (parentIndex >= parents.size()) {
+                    nodes.add(null);
+                    nodes.add(null);
+                    continue;
+                }
+                TreeNode parent = parents.get(parentIndex);
+                if (parent == null) {
+                    nodes.add(null);
+                    nodes.add(null);
+                    continue;
+                }
+                if (i % 2 == 0) {
+                    nodes.add(parent.left);
+                } else {
+                    nodes.add(parent.right);
+                }
+            }
+            parents = nodes;
         }
-        return nodes;
+        return parents;
     }
 
     List<TreeNode> nodesAt(int depth) {

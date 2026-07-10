@@ -39,7 +39,7 @@ class BinaryTreeHelper {
                 TreeNode node = index < preOrderArray.length ? parseValue(preOrderArray[index]) : null;
                 TreeNode parent = parents.get(i / 2);
                 if (parent == null && node != null) {
-                    throw new IllegalArgumentException("");
+                    throw new IllegalArgumentException("trying to add child to null parent");
                 } else if (node == null) {
                     continue;
                 }
