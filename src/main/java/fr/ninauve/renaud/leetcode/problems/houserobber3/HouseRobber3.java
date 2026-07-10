@@ -57,6 +57,9 @@ public class HouseRobber3 {
         for (int depth = maxDepth - 2; depth >= 0; depth--) {
             List<TreeNode> nodes = nodesAt(depth);
             for (TreeNode node : nodes) {
+                if (node == null) {
+                    continue;
+                }
                 if (depth == maxDepth - 2) {
                     node.val = node.val + total2(node);
                 } else {
@@ -160,6 +163,9 @@ public class HouseRobber3 {
     }
 
     int total2(TreeNode parent) {
+        if (parent == null) {
+            return 0;
+        }
         return Stream.of(parent.left, parent.right)
                 .filter(Objects::nonNull)
                 .flatMap(n -> Stream.of(n.left, n.right))
