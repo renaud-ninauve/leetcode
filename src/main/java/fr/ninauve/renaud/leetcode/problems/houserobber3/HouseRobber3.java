@@ -1,15 +1,12 @@
 package fr.ninauve.renaud.leetcode.problems.houserobber3;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class HouseRobber3 {
     TreeNode root;
     int maxDepth;
+    Map<TreeNode, RobOrSkip> maxRobs = new LinkedHashMap<>();
 
     int rob(TreeNode root) {
         this.root = root;
@@ -27,9 +24,6 @@ public class HouseRobber3 {
             return Math.max(total0, total1);
         }
         if (maxDepth == 2) {
-            //      0
-            //   1    2
-            //  3  4 5 6
             TreeNode left = root.left != null ? root.left : new TreeNode(0);
             TreeNode right = root.right != null ? root.right : new TreeNode(0);
             // right + total(left, 2, 3, 4)
@@ -39,68 +33,50 @@ public class HouseRobber3 {
                     left.val + total(right, 1, 2),
                     right.val + total(left, 1, 2));
         }
-        //            0
-        //      1             2
-        //   3    4       5      6
-        //  7  8 9 10   11 12   13 14
 
-
-//      0
-//   1    2
-//  3  4 5 6
-
-        // 0 3 4
-        // 0 7 8 9 10
-        // 0 3 9 10
-        // 0 7 8 4
-
-        for (int depth = maxDepth - 2; depth >= 0; depth--) {
-            List<TreeNode> nodes = nodesAt(depth);
-            for (TreeNode node : nodes) {
-                if (node == null) {
-                    continue;
-                }
-                if (depth == maxDepth - 2) {
-                    node.val = node.val + total2(node);
-                } else {
-                    TreeNode left = node.left != null ? node.left : new TreeNode(0);
-                    TreeNode right = node.right != null ? node.right : new TreeNode(0);
-                    int maxLeft = max(
-                            total(left, 3, 4, 5, 6),
-                            total(left, 1, 2),
-                            total(left, 1, 5, 6),
-                            total(left, 2, 3, 4));
-                    int maxRight = max(
-                            total(right, 3, 4, 5, 6),
-                            total(right, 1, 2),
-                            total(right, 1, 5, 6),
-                            total(right, 2, 3, 4));
-                    node.val = node.val + maxLeft + maxRight;
-                }
+        final List<TreeNode> nodes = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            nodes.add(node);
+            if (node.left != null) {
+                queue.offer(node.left);
+            }
+            if (node.right != null) {
+                queue.offer(node.right);
             }
         }
-        //            0
-        //      1             2
-        //   3    4       5      6
-        //  7  8 9 10   11 12   13 14
+        List<TreeNode> leafToRoot = nodes.reversed();
 
-        //      0
-        //   1    2
-        //  3  4 5 6
-        TreeNode left = root.left != null ? root.left : new TreeNode(0);
-        TreeNode right = root.right != null ? root.right : new TreeNode(0);
-        // right + total(left, 2, 3, 4)
-        return max(
-                root.val,
-                left.val + right.val,
-                left.val + total(right, 1, 2),
-                left.val + total(right, 3, 4, 5, 6),
-                left.val + total(right, 1, 5, 6),
-                left.val + total(right, 2, 3, 4),
-                right.val + total(left, 1, 2),
-                right.val + total(left, 3, 4, 5, 6),
-                right.val + total(left, 1, 5, 6),
-                right.val + total(left, 2, 3, 4));
+        for (TreeNode node : leafToRoot) {
+            RobOrSkip maxLeft = max(node.left);
+            RobOrSkip maxRight = max(node.right);
+            RobOrSkip maxNode = new RobOrSkip(
+                    node.val + maxLeft.skip() + maxRight.skip(),
+                    maxLeft.max() + maxRight.max());
+            maxRobs.put(node, maxNode);
+        }
+
+        RobOrSkip maxRoot = maxRobs.get(root);
+        return maxRoot.max();
+    }
+
+    record RobOrSkip(int rob, int skip) {
+        int max() {
+            return Math.max(rob, skip);
+        }
+    }
+
+    RobOrSkip max(TreeNode node) {
+        if (node == null) {
+            return new RobOrSkip(0, 0);
+        }
+        RobOrSkip result = maxRobs.get(node);
+        if (result == null) {
+            throw new IllegalArgumentException("should not be null");
+        }
+        return result;
     }
 
     static int max(int... numbers) {
@@ -125,12 +101,6 @@ public class HouseRobber3 {
                 .map(n -> n != null ? n : new TreeNode(0));
     }
 
-    // 2**4 - 2**3 = length
-    // 2**depth - 1 = start
-    //            0
-//      1             2
-//   3    4       5      6
-//  7  8 9 10   11 12   13 14
     int total(TreeNode parent, int... indexes) {
         return Arrays.stream(indexes)
                 .map(i -> {
@@ -155,25 +125,6 @@ public class HouseRobber3 {
                 }).sum();
     }
 
-    int total1(TreeNode parent) {
-        return Stream.of(parent.left, parent.right)
-                .filter(Objects::nonNull)
-                .mapToInt(n -> n.val)
-                .sum();
-    }
-
-    int total2(TreeNode parent) {
-        if (parent == null) {
-            return 0;
-        }
-        return Stream.of(parent.left, parent.right)
-                .filter(Objects::nonNull)
-                .flatMap(n -> Stream.of(n.left, n.right))
-                .filter(Objects::nonNull)
-                .mapToInt(n -> n.val)
-                .sum();
-    }
-
     List<TreeNode> nodesAt(TreeNode start, int depth) {
         if (depth == 0) {
             return List.of(start);
@@ -186,12 +137,10 @@ public class HouseRobber3 {
                 int parentIndex = i / 2;
                 if (parentIndex >= parents.size()) {
                     nodes.add(null);
-                    nodes.add(null);
                     continue;
                 }
                 TreeNode parent = parents.get(parentIndex);
                 if (parent == null) {
-                    nodes.add(null);
                     nodes.add(null);
                     continue;
                 }
